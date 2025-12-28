@@ -2,12 +2,12 @@ part of '../hex_toolkit.dart';
 
 // All my neighbors
 var _directions = [
-  Cube(1, 0, -1),
-  Cube(1, -1, 0),
-  Cube(0, -1, 1),
-  Cube(-1, 0, 1),
-  Cube(-1, 1, 0),
-  Cube(0, 1, -1),
+  Cube.fromAxial(1, 0),
+  Cube.fromAxial(1, -1),
+  Cube.fromAxial(0, -1),
+  Cube.fromAxial(-1, 0),
+  Cube.fromAxial(-1, 1),
+  Cube.fromAxial(0, 1),
 ];
 
 Hex _toHex(Cube cube) => Hex.fromCube(cube);
@@ -32,8 +32,7 @@ class Hex {
   Hex.zero() : cube = Cube(0, 0, 0);
 
   /// Creates hexagon from a given [GridOffset] coordinates, using the given [GridLayout].
-  Hex.fromOffset(GridOffset offset,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP})
+  Hex.fromOffset(GridOffset offset, {GridLayout gridLayout = GridLayout.POINTY_TOP})
       : cube = offset.toCube(gridLayout: gridLayout);
 
   /// Creates hexagon from a given [id].
@@ -55,11 +54,9 @@ class Hex {
     }
   }
 
-  String? _id;
-
   /// Returns a unique id of the hexagon. Id is a string representation of the underlaying [Cube]
   /// coordinates of this hexagon. It can be used to restore the [Hex] using [Hex.fromId] constructor.
-  String get id => (_id ??= _createCubeId(cube));
+  String get id => _createCubeId(cube);
 
   /// Creates [GridOffset] coordinates from this hexagon, using the given [GridLayout].
   GridOffset toOffset({GridLayout gridLayout = GridLayout.POINTY_TOP}) {
@@ -76,10 +73,7 @@ class Hex {
 
   /// All my six neighboring hexagons.
   List<Hex> neighbors() {
-    return _directions
-        .map((Cube direction) => cube + direction)
-        .map(_toHex)
-        .toList();
+    return _directions.map((Cube direction) => cube + direction).map(_toHex).toList();
   }
 
   /// Distance to the given hexagon - the number of steps needed to get to the given hexagon.
@@ -175,22 +169,19 @@ class Hex {
   /// The searched area is limited by a circle with radius [maximumDistanceFromTo] and
   /// center in [to]. Default value of [maximumDistanceFromTo] is arbitrary value of `max(distanceTo(to) * 2, 10)`.
   ///
-  HexPath? cheapestPathTo(Hex to,
-      {MoveCost? costFunction, int? maximumDistanceFromTo}) {
+  HexPath? cheapestPathTo(Hex to, {MoveCost? costFunction, int? maximumDistanceFromTo}) {
     maximumDistanceFromTo ??= max(distanceTo(to) * 2, 10);
     costFunction ??= (from, to) => 1;
     return findCheapestPath(this, to, costFunction, maximumDistanceFromTo);
   }
 
   /// Center of this hex in a pixel grid.
-  PixelPoint centerPoint(double size,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+  PixelPoint centerPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     return cube.centerPoint(size, gridLayout);
   }
 
   /// Top left corner of this hex in a pixel grid (use it to draw the hex using a raster graphics).
-  PixelPoint topLeftPoint(double size,
-      {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
+  PixelPoint topLeftPoint(double size, {GridLayout gridLayout = GridLayout.POINTY_TOP}) {
     var center = cube.centerPoint(size, gridLayout);
     if (gridLayout == GridLayout.POINTY_TOP) {
       double w = _sqrt3_2 * size;
@@ -275,8 +266,7 @@ class Hex {
   /// Interpolates between this hex and the target hex using the specified easing function.
   /// The parameter t should be between 0 and 1, where 0 returns this hex and 1 returns the target hex.
   /// Returns a new Hex instance.
-  Hex interpolate(Hex target, double t,
-      [EasingFunction easing = Easing.linear]) {
+  Hex interpolate(Hex target, double t, [EasingFunction easing = Easing.linear]) {
     assert(t >= 0 && t <= 1);
     double easedT = easing(t);
     return Hex.fromCube(cubeLerp(cube, target.cube, easedT));

@@ -2,10 +2,7 @@ part of '../hex_toolkit.dart';
 
 /// Two possible layouts of a hexagonal grid, which are used to convert between cube and offset coordinates, or when actually drawing the grid.
 /// In https://www.redblobgames.com/grids/hexagons/ these are called "odd-r" (pointy) and "odd-q" (flat).
-enum GridLayout {
-  POINTY_TOP,
-  FLAT_TOP,
-}
+enum GridLayout { POINTY_TOP, FLAT_TOP }
 
 /// Rather impractical representation of a hexagon in a hexagonal grid, positioned by [q] (column) and [r] (row) coordinates.
 /// "Zero" hexagon is in the top left corner. Odd rows (columns) are shifted to the right (down).
@@ -61,16 +58,15 @@ class GridOffset {
 class Cube {
   final int q;
   final int r;
-  final int s;
+  int get s => -q - r;
 
-  Cube(this.q, this.r, this.s) {
+  Cube(this.q, this.r, int s) {
     assert(q + r + s == 0);
   }
 
-  Cube.fromAxial(int q, int r) : this(q, r, -q - r);
+  Cube.fromAxial(this.q, this.r);
 
-  factory Cube.fromGridOffset(GridOffset o,
-          [GridLayout gridLayout = GridLayout.POINTY_TOP]) =>
+  factory Cube.fromGridOffset(GridOffset o, [GridLayout gridLayout = GridLayout.POINTY_TOP]) =>
       o.toCube(gridLayout: gridLayout);
 
   /// Converts this cube to an [GridOffset] coordinate, using the given [GridLayout].
@@ -96,8 +92,7 @@ class Cube {
     }
   }
 
-  PixelPoint centerPoint(double size,
-      [GridLayout gridLayout = GridLayout.POINTY_TOP]) {
+  PixelPoint centerPoint(double size, [GridLayout gridLayout = GridLayout.POINTY_TOP]) {
     if (gridLayout == GridLayout.POINTY_TOP) {
       var x = size * (_sqrt3 * q + _sqrt3_2 * r);
       var y = size * (3 / 2 * r);
