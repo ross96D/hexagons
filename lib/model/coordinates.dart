@@ -39,10 +39,7 @@ class GridOffset {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is GridOffset &&
-          runtimeType == other.runtimeType &&
-          q == other.q &&
-          r == other.r;
+      other is GridOffset && runtimeType == other.runtimeType && q == other.q && r == other.r;
 
   @override
   int get hashCode => q.hashCode ^ r.hashCode;
@@ -107,28 +104,22 @@ class Cube {
   }
 
   Cube operator +(Cube delta) {
-    return Cube(q + delta.q, r + delta.r, s + delta.s);
+    return Cube.fromAxial(q + delta.q, r + delta.r);
   }
 
   Cube operator -(Cube delta) {
-    return Cube(q - delta.q, r - delta.r, s - delta.s);
+    return Cube.fromAxial(q - delta.q, r - delta.r);
   }
 
   Cube operator *(int scalar) {
-    return Cube(q * scalar, r * scalar, s * scalar);
+    return Cube.fromAxial(q * scalar, r * scalar);
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Cube &&
-          runtimeType == other.runtimeType &&
-          q == other.q &&
-          r == other.r &&
-          s == other.s;
+  bool operator ==(Object other) => other is Cube && q == other.q && r == other.r;
 
   @override
-  int get hashCode => q.hashCode ^ r.hashCode ^ s.hashCode;
+  int get hashCode => q.hashCode ^ r.hashCode;
 
   @override
   String toString() => 'Cube($q, $r, $s)';
